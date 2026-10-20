@@ -1,0 +1,79 @@
+DANH SÁCH YÊU CẦU CHUNG — ĐỀ TÀI COVID-19 3 CHÂU LỤC
+Phạm vi: Bắc Mỹ, Châu Á, Châu Phi
+Phương pháp: Time Series EDA + Feature Engineering + Machine Learning
+Mục tiêu dự báo: New_Confirmed (số ca mắc mới theo ngày)
+
+A. DATA PREPARATION
+[ ] Đọc 3 file CSV gốc.
+[ ] Kiểm tra số dòng/cột, kiểu dữ liệu, khoảng ngày, thiếu dữ liệu, dòng trùng.
+[ ] Chuyển Date sang datetime, sắp xếp theo ngày.
+[ ] Cộng Confirmed, Deaths, Recovered, Active theo từng ngày trong mỗi châu lục.
+[ ] Tính New_Confirmed, New_Deaths, New_Recovered bằng sai phân số tích lũy.
+[ ] Kiểm tra số ca mới âm hoặc bất thường; ghi lại cách xử lý.
+[ ] Xuất CSV tổng hợp và mô tả rõ dữ liệu.
+
+B. TIME SERIES EDA
+[ ] Biểu đồ ca mắc mới hằng ngày cho từng châu lục.
+[ ] Đường trung bình trượt 7 ngày và 14 ngày.
+[ ] Đường tổng ca xác nhận tích lũy.
+[ ] Bảng so sánh tổng Confirmed/Deaths/Recovered cuối kỳ.
+[ ] Xác định đỉnh New_Confirmed và ngày đạt đỉnh của mỗi châu lục.
+[ ] Phân tích theo thứ trong tuần nếu dữ liệu phù hợp.
+[ ] Viết nhận xét cho từng biểu đồ, có so sánh 3 châu lục.
+
+C. FEATURE ENGINEERING
+[ ] Chọn New_Confirmed làm target.
+[ ] Tạo sai phân bậc 1 Diff_1.
+[ ] Tạo Lag 1, 2, 3, 7.
+[ ] Tạo rolling mean/std 7 ngày chỉ từ dữ liệu quá khứ (shift(1)).
+[ ] Tạo biến lịch DayOfWeek, IsWeekend và/hoặc Month.
+[ ] Loại bỏ dòng NaN do lag/rolling.
+[ ] Kiểm tra không có rò rỉ dữ liệu tương lai.
+
+D. TRAIN/TEST
+[ ] Chia 80% đầu theo thời gian làm Train và 20% cuối làm Test.
+[ ] Không dùng shuffle ngẫu nhiên.
+[ ] Ghi số dòng và khoảng ngày của từng tập.
+[ ] Dùng cùng nguyên tắc chia để so sánh mô hình.
+
+E. NĂM MÔ HÌNH
+[ ] 1. Linear Regression (Level/Baseline).
+[ ] 2. Ridge Regression (Diff).
+[ ] 3. Random Forest Regressor (Diff).
+[ ] 4. Gradient Boosting Regressor (Diff).
+[ ] 5. Decision Tree Regressor (Diff) — phần bổ sung.
+[ ] Huấn luyện đủ 5 mô hình cho cả 3 châu lục.
+[ ] Với mô hình Diff, chuyển dự báo về mức ca mới bằng Lag_1 + dự báo sai phân.
+[ ] Ghi rõ các tham số chính của mô hình.
+
+F. EVALUATION
+[ ] Tính MAE, RMSE, R² và MAPE.
+[ ] MAPE xử lý an toàn khi actual = 0/gần 0 và ghi rõ quy tắc.
+[ ] Tạo bảng kết quả 5 mô hình × 3 châu lục (15 dòng).
+[ ] Vẽ biểu đồ so sánh MAE/RMSE.
+[ ] Vẽ Actual vs Predicted trên tập Test cho từng châu lục.
+[ ] Phân tích residual cho mô hình được chọn (nếu đủ thời gian).
+[ ] Chọn mô hình tốt nhất riêng cho từng châu lục và giải thích bằng số liệu.
+
+G. KẾT LUẬN VÀ NỘP BÀI
+[ ] Tóm tắt kết quả EDA.
+[ ] Kết luận mô hình tốt nhất dựa trên bảng metrics thực tế.
+[ ] Nêu hạn chế dữ liệu, thời gian quan sát và sai số.
+[ ] Không diễn giải số ca tuyệt đối thành nguy cơ tương đối khi chưa chuẩn hóa dân số.
+[ ] Notebook chạy từ đầu đến cuối không lỗi.
+[ ] Có tiêu đề, mô tả ngắn, nhãn trục, đơn vị, chú giải và nhận xét cho biểu đồ.
+[ ] Lưu notebook, CSV tổng hợp, báo cáo và slide vào thư mục chung.
+
+PHÂN CÔNG 6 THÀNH VIÊN (GỢI Ý)
+1. Thành viên 1 — Data Preparation: xử lý 3 CSV, tổng hợp theo ngày, kiểm tra chất lượng dữ liệu.
+2. Thành viên 2 — EDA: biểu đồ xu hướng, rolling averages, tích lũy, so sánh châu lục, viết nhận xét.
+3. Thành viên 3 — Feature Engineering & Temporal Split: lag, diff, rolling features, calendar features, train/test.
+4. Thành viên 4 — Linear Regression và Ridge Regression: code, huấn luyện, đánh giá và giải thích 2 mô hình.
+5. Thành viên 5 — Random Forest, Gradient Boosting, Decision Tree: code, huấn luyện, đánh giá và giải thích 3 mô hình.
+6. Thành viên 6 — Evaluation & Integration: tổng hợp metrics, biểu đồ so sánh, residuals, kết luận, ghép báo cáo/slide.
+
+LƯU Ý PHỐI HỢP
+- Thành viên 1 bàn giao dữ liệu cho 2 và 3.
+- Thành viên 3 bàn giao quy tắc tạo feature và split cho 4 và 5.
+- Thành viên 4 và 5 phải dùng cùng dữ liệu, cùng cách chia Train/Test và cùng quy tắc metrics.
+- Thành viên 6 không tự bịa kết quả; chỉ tổng hợp sau khi notebook chạy.
