@@ -1,0 +1,69 @@
+{
+  "target_level": "New_Confirmed",
+  "target_diff": "Diff_1",
+  "features_recommended": [
+    "Lag_1",
+    "Lag_2",
+    "Lag_3",
+    "Lag_7",
+    "Roll_Mean_7",
+    "Roll_Std_7",
+    "DayOfWeek",
+    "IsWeekend"
+  ],
+  "features_available": [
+    "Lag_1",
+    "Lag_2",
+    "Lag_3",
+    "Lag_7",
+    "Roll_Mean_7",
+    "Roll_Std_7",
+    "DayOfWeek",
+    "IsWeekend",
+    "Month"
+  ],
+  "reconstruct_rule": "y_hat = Lag_1 + predicted Diff_1",
+  "lags": [
+    1,
+    2,
+    3,
+    7
+  ],
+  "rolling_window": 7,
+  "rolling_rule": "shift(1) truoc khi rolling, chi dung qua khu",
+  "drop_first_day": "Bo 2020-01-22 vi New_Confirmed=0 la gia tri dien",
+  "train_ratio": 0.8,
+  "split_rule": "Theo thoi gian tung chau luc, cat tai int(n*0.8), khong shuffle",
+  "continents": [
+    "North America",
+    "Asia",
+    "Africa"
+  ],
+  "random_state": 42,
+  "split": {
+    "North America": {
+      "train_rows": 144,
+      "train_start": "2020-01-30",
+      "train_end": "2020-06-21",
+      "test_rows": 36,
+      "test_start": "2020-06-22",
+      "test_end": "2020-07-27"
+    },
+    "Asia": {
+      "train_rows": 144,
+      "train_start": "2020-01-30",
+      "train_end": "2020-06-21",
+      "test_rows": 36,
+      "test_start": "2020-06-22",
+      "test_end": "2020-07-27"
+    },
+    "Africa": {
+      "train_rows": 144,
+      "train_start": "2020-01-30",
+      "train_end": "2020-06-21",
+      "test_rows": 36,
+      "test_start": "2020-06-22",
+      "test_end": "2020-07-27"
+    }
+  }
+}
