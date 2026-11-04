@@ -48,3 +48,23 @@ Các mô hình được đánh giá bằng MAE, RMSE, R² và MAPE.
 Phần kiểm tra dữ liệu ban đầu được thực hiện trong `notebooks/01_data_preparation_phat.ipynb`.
 
 Các bước EDA, Feature Engineering, huấn luyện và đánh giá mô hình sẽ được các thành viên tiếp tục hoàn thiện.
+
+## 8. Backend API nhận ảnh X-quang
+
+Khởi chạy API từ thư mục gốc:
+
+```bash
+python -m pip install -r requirements.txt
+python -m uvicorn main:app --reload
+```
+
+Checkpoint ResNet50 mặc định là `covid.pth` ở thư mục gốc dự án. Có thể đặt đường dẫn khác bằng biến môi trường `COVID_MODEL_PATH`. Ví dụ trong PowerShell nếu model đặt ở đường dẫn khác:
+
+```powershell
+$env:COVID_MODEL_PATH = 'D:\duong-dan-khac\covid.pth'
+python -m uvicorn main:app --reload
+```
+
+Mở `http://127.0.0.1:8000/` để xem thông tin API hoặc `http://127.0.0.1:8000/docs` để gửi ảnh thử. Gửi ảnh PNG hoặc JPEG tới `POST /predict` dưới dạng multipart với tên trường `image`. API giới hạn ảnh ở 10 MB, chuyển sang RGB, resize về 224×224 và chuẩn hóa theo ImageNet. Các phép lật, xoay và color jitter chỉ dành cho augmentation lúc huấn luyện, không áp dụng ngẫu nhiên khi dự đoán.
+
+Phản hồi gồm `predicted_class`, `confidence` và phần trăm của cả bốn lớp (`COVID`, `Lung_Opacity`, `Normal`, `Viral Pneumonia`). Thứ tự các lớp phải khớp thứ tự đầu ra mà checkpoint được huấn luyện với. API xác thực checkpoint bằng cách nạp state dict nghiêm ngặt vào ResNet50; file không tương thích sẽ báo lỗi thay vì đưa ra dự đoán. Các phần trăm là điểm softmax của mô hình, không phải chẩn đoán y khoa hoặc bảo đảm xác suất đã được hiệu chỉnh.
