@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import pickle
 
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel
@@ -15,9 +16,23 @@ from torchvision.transforms import Compose, Normalize, Resize, ToTensor
 MAX_IMAGE_BYTES = 10 * 1024 * 1024
 ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG"}
 CLASS_NAMES = ("COVID", "Lung_Opacity", "Normal", "Viral Pneumonia")
-DEFAULT_MODEL_PATH = Path(__file__).resolve().parent / "covid.pth"
+DEFAULT_MODEL_PATH = Path(__file__).resolve().parents[2] / "covid.pth"
 
 app = FastAPI(title="COVID-19 X-ray API", version="0.2.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        origin.strip()
+        for origin in os.environ.get(
+            "COVID_CORS_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173,"
+            "http://localhost:4173,http://127.0.0.1:4173",
+        ).split(",")
+        if origin.strip()
+    ],
+    allow_methods=["POST"],
+    allow_headers=["*"],
+)
 
 
 class PredictionResponse(BaseModel):

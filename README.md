@@ -49,22 +49,44 @@ Phần kiểm tra dữ liệu ban đầu được thực hiện trong `notebooks
 
 Các bước EDA, Feature Engineering, huấn luyện và đánh giá mô hình sẽ được các thành viên tiếp tục hoàn thiện.
 
-## 8. Backend API nhận ảnh X-quang
+## 8. Web: Backend API nhận ảnh X-quang
 
 Khởi chạy API từ thư mục gốc:
 
 ```bash
 python -m pip install -r requirements.txt
-python -m uvicorn main:app --reload
+python -m uvicorn web.backend.main:app --reload
 ```
 
-Checkpoint ResNet50 mặc định là `covid.pth` ở thư mục gốc dự án. Có thể đặt đường dẫn khác bằng biến môi trường `COVID_MODEL_PATH`. Ví dụ trong PowerShell nếu model đặt ở đường dẫn khác:
+Checkpoint ResNet50 mặc định vẫn là `covid.pth` ở thư mục gốc dự án. Nếu đặt checkpoint ở nơi khác, `COVID_MODEL_PATH` có thể là đường dẫn tương đối tính từ thư mục terminal hiện tại hoặc đường dẫn tuyệt đối.
 
 ```powershell
-$env:COVID_MODEL_PATH = 'D:\duong-dan-khac\covid.pth'
-python -m uvicorn main:app --reload
+$env:COVID_MODEL_PATH = '.\models\covid.pth'
+python -m uvicorn web.backend.main:app --reload
 ```
 
 Mở `http://127.0.0.1:8000/` để xem thông tin API hoặc `http://127.0.0.1:8000/docs` để gửi ảnh thử. Gửi ảnh PNG hoặc JPEG tới `POST /predict` dưới dạng multipart với tên trường `image`. API giới hạn ảnh ở 10 MB, chuyển sang RGB, resize về 224×224 và chuẩn hóa theo ImageNet. Các phép lật, xoay và color jitter chỉ dành cho augmentation lúc huấn luyện, không áp dụng ngẫu nhiên khi dự đoán.
 
 Phản hồi gồm `predicted_class`, `confidence` và phần trăm của cả bốn lớp (`COVID`, `Lung_Opacity`, `Normal`, `Viral Pneumonia`). Thứ tự các lớp phải khớp thứ tự đầu ra mà checkpoint được huấn luyện với. API xác thực checkpoint bằng cách nạp state dict nghiêm ngặt vào ResNet50; file không tương thích sẽ báo lỗi thay vì đưa ra dự đoán. Các phần trăm là điểm softmax của mô hình, không phải chẩn đoán y khoa hoặc bảo đảm xác suất đã được hiệu chỉnh.
+
+## 9. Web: Giao diện React
+
+Giao diện cho phép chọn hoặc kéo-thả ảnh X-quang PNG/JPEG, xem trước ảnh và gửi tới API `/predict`. Cần chạy backend và frontend ở hai cửa sổ terminal riêng:
+
+```powershell
+# Terminal 1: API backend
+python -m uvicorn web.backend.main:app --reload
+
+# Terminal 2: React frontend
+cd web/frontend
+npm install
+npm run dev
+```
+
+Frontend nằm trong `web/frontend/`. Chạy các lệnh trên từ thư mục gốc dự án.
+
+Mở URL được Vite hiển thị (mặc định `http://localhost:5173`). Giao diện mặc định gọi API tại `http://127.0.0.1:8000`. Để dùng địa chỉ backend khác, tạo file `web/frontend/.env` với `VITE_API_URL=http://dia-chi-backend:8000`. Nếu frontend chạy ở origin khác, đặt biến `COVID_CORS_ORIGINS` khi khởi chạy backend thành danh sách origin được phép, phân cách bằng dấu phẩy. Mặc định API cho phép frontend Vite tại localhost/127.0.0.1 ở cổng 5173 và 4173.
+
+Mã nguồn web được gom trong `web/`: `web/backend/` chứa FastAPI và `web/frontend/` chứa ứng dụng React. Lệnh khởi chạy backend được thực hiện từ thư mục gốc dự án.
+
+Giao diện chỉ phục vụ nghiên cứu; kết quả không thay thế chẩn đoán hoặc tư vấn y khoa.
