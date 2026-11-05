@@ -6,7 +6,7 @@ from fastapi import HTTPException, UploadFile
 from PIL import Image
 import torch
 
-from main import CLASS_NAMES, favicon, predict, root
+from web.backend.main import CLASS_NAMES, favicon, predict, root
 
 
 def make_png() -> bytes:
@@ -24,7 +24,7 @@ class PredictEndpointTests(unittest.TestCase):
     def test_valid_image_returns_four_class_percentages(self) -> None:
         upload = UploadFile(filename="xray.png", file=BytesIO(make_png()))
 
-        with patch("main.load_model", return_value=FixedModel()):
+        with patch("web.backend.main.load_model", return_value=FixedModel()):
             response = predict(upload)
 
         self.assertEqual(response.predicted_class, "COVID")
@@ -35,7 +35,7 @@ class PredictEndpointTests(unittest.TestCase):
     def test_missing_model_reports_not_configured(self) -> None:
         upload = UploadFile(filename="xray.png", file=BytesIO(make_png()))
 
-        with patch("main.load_model", side_effect=FileNotFoundError):
+        with patch("web.backend.main.load_model", side_effect=FileNotFoundError):
             with self.assertRaises(HTTPException) as raised:
                 predict(upload)
 
@@ -67,7 +67,7 @@ class PredictEndpointTests(unittest.TestCase):
     def test_oversized_image_is_rejected(self) -> None:
         upload = UploadFile(filename="large.png", file=BytesIO(b"12345"))
 
-        with patch("main.MAX_IMAGE_BYTES", 4):
+        with patch("web.backend.main.MAX_IMAGE_BYTES", 4):
             with self.assertRaises(HTTPException) as raised:
                 predict(upload)
 
