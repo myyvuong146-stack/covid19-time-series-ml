@@ -74,6 +74,9 @@ Phản hồi gồm `predicted_class`, `confidence` và phần trăm của cả b
 Giao diện cho phép chọn hoặc kéo-thả ảnh X-quang PNG/JPEG, xem trước ảnh và gửi tới API `/predict`. Cần chạy backend và frontend ở hai cửa sổ terminal riêng:
 
 ```powershell
+# instal libary
+python -m pip install --upgrade pip
+python -m pip install "fastapi[standard]" "uvicorn[standard]" torch torchvision torchaudio
 # Terminal 1: API backend
 python -m uvicorn web.backend.main:app --reload
 
